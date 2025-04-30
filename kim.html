@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>System Override - KEBIB</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: #0f0;
+      font-family: monospace;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #boot {
+      font-size: 16px;
+      white-space: pre-wrap;
+      padding: 40px;
+    }
+
+    #matrix {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    #terminal {
+      display: none;
+      width: 90%;
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid #0f0;
+      border-radius: 10px;
+      height: 65%;
+      overflow-y: auto;
+      box-shadow: 0 0 20px #0f0;
+    }
+
+    .line::before {
+      content: "> ";
+    }
+
+    .alert {
+      text-align: center;
+      font-size: 30px;
+      color: red;
+      animation: pulse 1s infinite;
+      display: none;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.2; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+  <div class="alert" id="alertText">!! SYSTEM COMPROMISED - BREACH DETECTED !!</div>
+  <div id="boot"></div>
+  <div id="terminal"></div>
+  <audio id="siren" src="https://www.soundjay.com/misc/sounds/fail-buzzer-01.mp3"></audio>
+
+  <script>
+    // Fake Boot Screen Text
+    const bootText = `
+    BIOS Version 4.03 - SecureCore
+    Initializing Hardware...
+    Checking memory: OK
+    Detecting drives: OK
+    Booting system kernel...
+    Verifying security: FAILED
+    SYSTEM OVERRIDE DETECTED
+    INITIATING SECURITY COUNTERMEASURE...
+    `;
+
+    const bootEl = document.getElementById('boot');
+    const terminalEl = document.getElementById('terminal');
+    const alertText = document.getElementById('alertText');
+    const siren = document.getElementById('siren');
+
+    let bootIndex = 0;
+
+    function showBoot() {
+      if (bootIndex < bootText.length) {
+        bootEl.textContent += bootText.charAt(bootIndex);
+        bootIndex++;
+        setTimeout(showBoot, 30);
+      } else {
+        setTimeout(startHackSequence, 1500);
+      }
+    }
+
+    showBoot();
+
+    function startHackSequence() {
+      bootEl.style.display = "none";
+      alertText.style.display = "block";
+      terminalEl.style.display = "block";
+      siren.play();
+
+      const lines = [
+        "Connecting to target...",
+        "Port 22 open",
+        "SSH access granted",
+        "Root privileges acquired",
+        "Injecting malware.exe...",
+        "Extracting files...",
+        "Sending to: darkweb@tor.onion",
+        "Access Logs Deleted",
+        "System Hacked by KEBIB"
+      ];
+      let lineIndex = 0;
+
+      function typeLines() {
+        if (lineIndex < lines.length) {
+          const lineDiv = document.createElement('div');
+          lineDiv.className = 'line';
+          terminalEl.appendChild(lineDiv);
+          let charIndex = 0;
+          const typer = setInterval(() => {
+            lineDiv.textContent += lines[lineIndex][charIndex];
+            charIndex++;
+            if (charIndex === lines[lineIndex].length) {
+              clearInterval(typer);
+              terminalEl.scrollTop = terminalEl.scrollHeight;
+              lineIndex++;
+              setTimeout(typeLines, 500);
+            }
+          }, 40);
+        }
+      }
+
+      typeLines();
+    }
+
+    // Matrix Background
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const letters = "アカサタナ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = Array.from({ length: columns }).fill(1);
+
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#0F0";
+      ctx.font = fontSize + "px monospace";
+
+      drops.forEach((y, i) => {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, y * fontSize);
+        if (y * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      });
+    }
+
+    setInterval(drawMatrix, 33);
+  </script>
+</body>
+</html>
